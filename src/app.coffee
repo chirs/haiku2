@@ -28,8 +28,15 @@ index = (req, res) ->
 
 firstHaiku = (req, res) ->
   callback = (err, haiku) ->
-    res.render('show', {layout: false, haiku: haiku.doc})
+    res.json haiku.doc._id
+  #Haiku.findOne({_id:req.params.id}, callback)
   Haiku.findOne({show:true}, callback)
+
+nextHaiku = (req, res) ->
+  callback = (err, haiku) ->
+    res.json haiku.doc._id
+  Haiku.findOne({show:true}, callback)
+
 
 newHaiku = (req, res) -> res.render('new', {layout: false})
 
@@ -50,3 +57,4 @@ app.get('/first', firstHaiku)
 app.get('/new', newHaiku)
 app.get('/h/:id', detail)
 app.get('/h/:id/edit', editHaiku)
+app.get('/h/:id/next', nextHaiku)

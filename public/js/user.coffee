@@ -1,28 +1,33 @@
 $(->
 
-  $("#haiku").load("/first")
+  o = {
+    currentId: null
+    }
 
-  getCurrentId = ->
-    el = $(".hidden-id")
-    if el.length
-      return el.html()
-    input = $("input[name=haiku[_id]]")
-    if input.length
-      return input.val()
-    else
-      null
+  stripQuotes = (s) ->
+    s.replace("\"", "").replace("\"", "")
+
+  $.get("/first", (data) ->
+    o.currentId = stripQuotes(data)
+    $("#haiku").load("/h/" + o.currentId)
+    )
 
   nextHaiku = ->
-    $("#haiku").load "/h/#{ getCurrentId() }/next"
+    $.get("/h/#{ o.currentId }/next", (data) ->
+      o.currentId = stripQuotes(data)
+      $("#haiku").load("/h/" + o.currentId)
+    )
 
   currentHaiku = ->
-    $("#haiku").load "/h/#{ getCurrentId() }/"
+    $("#haiku").load "/h/#{ o.currentId }/"
+
   saveHaiku = ->
 
-  newHaiku = -> $("#haiku").load('/new')
+  newHaiku = ->
+    $("#haiku").load('/new')
 
   editHaiku = ->
-    $("#haiku").load "/h/#{ getCurrentId() }/edit"
+    $("#haiku").load "/h/#{ o.currentId }/edit"
 
 
   loadHandlers = ->

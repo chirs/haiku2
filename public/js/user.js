@@ -1,34 +1,31 @@
 (function() {
   $(function() {
-    var currentHaiku, editHaiku, getCurrentId, loadHandlers, newHaiku, nextHaiku, saveHaiku;
-    $("#haiku").load("/first");
-    getCurrentId = function() {
-      var el, input;
-      el = $(".hidden-id");
-      if (el.length) {
-        return el.html();
-      }
-      input = $("input[name=haiku[_id]]");
-      if (input.length) {
-        return input.val();
-      } else {
-        return null;
-      }
+    var currentHaiku, editHaiku, loadHandlers, newHaiku, nextHaiku, o, saveHaiku, stripQuotes;
+    o = {
+      currentId: null
     };
-    nextHaiku = function() {};
+    stripQuotes = function(s) {
+      return s.replace("\"", "").replace("\"", "");
+    };
+    $.get("/first", function(data) {
+      o.currentId = stripQuotes(data);
+      return $("#haiku").load("/h/" + o.currentId);
+    });
+    nextHaiku = function() {
+      return $.get("/h/" + o.currentId + "/next", function(data) {
+        o.currentId = stripQuotes(data);
+        return $("#haiku").load("/h/" + o.currentId);
+      });
+    };
     currentHaiku = function() {
-      var x;
-      x = getCurrentId();
-      return $("#haiku").load("/h/" + (getCurrentId()) + "/");
+      return $("#haiku").load("/h/" + o.currentId + "/");
     };
     saveHaiku = function() {};
     newHaiku = function() {
       return $("#haiku").load('/new');
     };
     editHaiku = function() {
-      var x;
-      x = getCurrentId();
-      return $("#haiku").load("/h/" + (getCurrentId()) + "/edit");
+      return $("#haiku").load("/h/" + o.currentId + "/edit");
     };
     loadHandlers = function() {
       $("#next").live('click', nextHaiku);
